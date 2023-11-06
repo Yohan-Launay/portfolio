@@ -1,0 +1,91 @@
+version: '3.3'
+
+services:
+  db:
+    image: mariadb
+    container_name: bir_docker_mariadb
+    restart: always
+    volumes:
+      - bir-db-data:/var/lib/mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+    networks:
+      - dev
+    ports:
+      - "33306:3306"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: bir_docker_rabbitmq
+    volumes:
+      - rmqconf:/etc/rabbitmq
+      - rmqdata:/var/lib/rabbitmq/mnesia
+      - rmqlogs:/var/log/rabbitmq
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "${CUSTOM_RABBIT_MANAGER_PORT}:15672"
+      - "${CUSTOM_RABBIT_PORT}:5672"
+    env_file:
+      - .env
+
+  php-fpm:
+    container_name: bir_php-fpm
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    depends_on:
+      - db
+      - rabbitmq
+    networks:
+      - dev
+    volumes:
+      - ./:/var/www/
+
+  nginx:
+    container_name: bir_nginx
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/default.conf:/etc/nginx/sites-available/default.conf
+    depends_on:
+      - db
+      - php-fpm
+    networks:
+      - dev
+    ports:
+      - "8080:80"
+
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-15}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+networks:
+  dev:
+
+volumes:
+  bir-db-data:
+  rmqconf:
+    driver: local
+  rmqlogs:
+    driver: local
+  rmqdata:
+    driver: local
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###
