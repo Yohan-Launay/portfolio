@@ -58,7 +58,6 @@ Encore
 
     .enablePostCssLoader()
 
-
     // uncomment if you use TypeScript
     //.enableTypeScriptLoader()
 
