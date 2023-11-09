@@ -79,17 +79,18 @@ dmg: vendor  ## Doctrine migration generate
 	$(SYMFONY) d:m:g --no-interaction
 
 db: vendor ## Drop database + Create database
-	## $(SYMFONY) doctrine:database:drop --if-exists --force -n
+	$(SYMFONY) doctrine:database:drop --if-exists --force -n
 	$(SYMFONY) doctrine:database:create
 
-dbm: db dmm cc ## Drop database + Create databse + Doctrine migration migrate + Clean cache
+dbm: db dmm cc ## Drop database + Create database + Doctrine migration migrate + Clean cache
 
-cdb: vendor  ## Clean db to delete bimeo users test
+cdb: vendor  ## Clean db to delete users test
 	$(SYMFONY) app:db:cleaner
 
 ISO: vendor ## Import ISO DATA
 	$(SYMFONY) import:country_code
 	$(SYMFONY) import:currency
+
 
 ## —— Project ———————————————————————————————————————————————————————————————————
 new: kill build up initfile update ## First installation of the project

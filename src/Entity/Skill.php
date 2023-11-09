@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\SkillRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SkillRepository::class)]
@@ -14,66 +16,74 @@ class Skill
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $imgPath = null;
+    private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $imgName = null;
+    #[ORM\ManyToOne(inversedBy: 'Skills')]
+    private ?SkillCategory $skillCategory = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    #[ORM\OneToMany(mappedBy: 'skill', targetEntity: SkillProject::class)]
+    private Collection $skillProjects;
 
-    #[ORM\ManyToOne(inversedBy: 'skills')]
-    private ?SkillCategory $skills = null;
+    public function __construct()
+    {
+        $this->skillProjects = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getImgPath(): ?string
+    public function getName(): ?string
     {
-        return $this->imgPath;
+        return $this->name;
     }
 
-    public function setImgPath(string $imgPath): static
+    public function setName(string $name): static
     {
-        $this->imgPath = $imgPath;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getImgName(): ?string
+    public function getSkillCategory(): ?SkillCategory
     {
-        return $this->imgName;
+        return $this->skillCategory;
     }
 
-    public function setImgName(string $imgName): static
+    public function setSkillCategory(?SkillCategory $skillCategory): static
     {
-        $this->imgName = $imgName;
+        $this->skillCategory = $skillCategory;
 
         return $this;
     }
 
-    public function getTitle(): ?string
+    /**
+     * @return Collection<int, SkillProject>
+     */
+    public function getSkillProjects(): Collection
     {
-        return $this->title;
+        return $this->skillProjects;
     }
 
-    public function setTitle(string $title): static
+    public function addSkillProject(SkillProject $skillProject): static
     {
-        $this->title = $title;
+        if (!$this->skillProjects->contains($skillProject)) {
+            $this->skillProjects->add($skillProject);
+            $skillProject->setSkill($this);
+        }
 
         return $this;
     }
 
-    public function getSkills(): ?SkillCategory
+    public function removeSkillProject(SkillProject $skillProject): static
     {
-        return $this->skills;
-    }
-
-    public function setSkills(?SkillCategory $skills): static
-    {
-        $this->skills = $skills;
+        if ($this->skillProjects->removeElement($skillProject)) {
+            // set the owning side to null (unless already changed)
+            if ($skillProject->getSkill() === $this) {
+                $skillProject->setSkill(null);
+            }
+        }
 
         return $this;
     }

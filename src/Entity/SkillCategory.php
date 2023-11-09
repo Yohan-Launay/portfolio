@@ -22,17 +22,17 @@ class SkillCategory
     private ?string $imgName = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'skillCategories')]
     private ?User $user = null;
 
-    #[ORM\OneToMany(mappedBy: 'skills', targetEntity: Skill::class)]
-    private Collection $skills;
+    #[ORM\OneToMany(mappedBy: 'skillCategory', targetEntity: Skill::class)]
+    private Collection $Skills;
 
     public function __construct()
     {
-        $this->skills = new ArrayCollection();
+        $this->Skills = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -64,14 +64,14 @@ class SkillCategory
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getName(): ?string
     {
-        return $this->title;
+        return $this->name;
     }
 
-    public function setTitle(string $title): static
+    public function setName(string $name): static
     {
-        $this->title = $title;
+        $this->name = $name;
 
         return $this;
     }
@@ -93,14 +93,14 @@ class SkillCategory
      */
     public function getSkills(): Collection
     {
-        return $this->skills;
+        return $this->Skills;
     }
 
     public function addSkill(Skill $skill): static
     {
-        if (!$this->skills->contains($skill)) {
-            $this->skills->add($skill);
-            $skill->setSkills($this);
+        if (!$this->Skills->contains($skill)) {
+            $this->Skills->add($skill);
+            $skill->setSkillCategory($this);
         }
 
         return $this;
@@ -108,10 +108,10 @@ class SkillCategory
 
     public function removeSkill(Skill $skill): static
     {
-        if ($this->skills->removeElement($skill)) {
+        if ($this->Skills->removeElement($skill)) {
             // set the owning side to null (unless already changed)
-            if ($skill->getSkills() === $this) {
-                $skill->setSkills(null);
+            if ($skill->getSkillCategory() === $this) {
+                $skill->setSkillCategory(null);
             }
         }
 

@@ -3,8 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\ProjectRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 class Project
@@ -21,10 +22,18 @@ class Project
     private ?string $resume = null;
 
     #[ORM\Column]
-    private ?bool $state = null;
+    private ?int $state = null;
 
     #[ORM\Column(length: 255)]
     private ?string $urlPath = null;
+
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: SkillProject::class)]
+    private Collection $skillProjects;
+
+    public function __construct()
+    {
+        $this->skillProjects = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -55,12 +64,12 @@ class Project
         return $this;
     }
 
-    public function isState(): ?bool
+    public function getState(): ?int
     {
         return $this->state;
     }
 
-    public function setState(bool $state): static
+    public function setState(int $state): static
     {
         $this->state = $state;
 
@@ -75,6 +84,36 @@ class Project
     public function setUrlPath(string $urlPath): static
     {
         $this->urlPath = $urlPath;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SkillProject>
+     */
+    public function getSkillProjects(): Collection
+    {
+        return $this->skillProjects;
+    }
+
+    public function addSkillProject(SkillProject $skillProject): static
+    {
+        if (!$this->skillProjects->contains($skillProject)) {
+            $this->skillProjects->add($skillProject);
+            $skillProject->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSkillProject(SkillProject $skillProject): static
+    {
+        if ($this->skillProjects->removeElement($skillProject)) {
+            // set the owning side to null (unless already changed)
+            if ($skillProject->getProject() === $this) {
+                $skillProject->setProject(null);
+            }
+        }
 
         return $this;
     }

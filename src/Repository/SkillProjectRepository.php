@@ -2,27 +2,27 @@
 
 namespace App\Repository;
 
-use App\Entity\SkillProjects;
+use App\Entity\SkillProject;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<SkillProjects>
+ * @extends ServiceEntityRepository<SkillProject>
  *
- * @method SkillProjects|null find($id, $lockMode = null, $lockVersion = null)
- * @method SkillProjects|null findOneBy(array $criteria, array $orderBy = null)
- * @method SkillProjects[]    findAll()
- * @method SkillProjects[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method SkillProject|null find($id, $lockMode = null, $lockVersion = null)
+ * @method SkillProject|null findOneBy(array $criteria, array $orderBy = null)
+ * @method SkillProject[]    findAll()
+ * @method SkillProject[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SkillProjectsRepository extends ServiceEntityRepository
+class SkillProjectRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, SkillProjects::class);
+        parent::__construct($registry, SkillProject::class);
     }
 
 //    /**
-//     * @return SkillProjects[] Returns an array of SkillProjects objects
+//     * @return SkillProject[] Returns an array of SkillProject objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -36,7 +36,7 @@ class SkillProjectsRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?SkillProjects
+//    public function findOneBySomeField($value): ?SkillProject
 //    {
 //        return $this->createQueryBuilder('s')
 //            ->andWhere('s.exampleField = :val')
