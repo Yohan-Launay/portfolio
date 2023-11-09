@@ -14,7 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method SkillCategories[]    findAll()
  * @method SkillCategories[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SkillCategoriesRepository extends ServiceEntityRepository
+class SkillCategoryRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

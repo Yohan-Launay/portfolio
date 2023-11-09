@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -27,6 +29,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: SkillCategory::class)]
+    private Collection $skillCategories;
+
+    public function __construct()
+    {
+        $this->skillCategories = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -96,5 +106,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, SkillCategory>
+     */
+    public function getSkillCategories(): Collection
+    {
+        return $this->skillCategories;
+    }
+
+    public function addSkillCategory(SkillCategory $skillCategory): static
+    {
+        if (!$this->skillCategories->contains($skillCategory)) {
+            $this->skillCategories->add($skillCategory);
+            $skillCategory->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSkillCategory(SkillCategory $skillCategory): static
+    {
+        if ($this->skillCategories->removeElement($skillCategory)) {
+            // set the owning side to null (unless already changed)
+            if ($skillCategory->getUser() === $this) {
+                $skillCategory->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

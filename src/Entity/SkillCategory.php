@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\SkillCategoriesRepository;
+use App\Repository\SkillCategoryRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: SkillCategoriesRepository::class)]
-class SkillCategories
+#[ORM\Entity(repositoryClass: SkillCategoryRepository::class)]
+class SkillCategory
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,6 +21,9 @@ class SkillCategories
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
+
+    #[ORM\ManyToOne(inversedBy: 'skillCategories')]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -59,6 +62,18 @@ class SkillCategories
     public function setTitle(string $title): static
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
